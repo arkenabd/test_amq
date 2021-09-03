@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       https://camel.apache.org/schema/spring/camel-spring.xsd">
+    <bean class="org.apache.activemq.ActiveMQConnectionFactory" id="jmsConnectionFactory">
+        <!--<property name="brokerURL" value="tcp://broker-amq-tcp-nodeport-route-amq.192.168.99.101.nip.io:31515"/>-->
+        <property name="brokerURL" value="tcp://${amq.address}:${amq.port}"/>
+        <property name="userName" value="${amq.user}"/>
+        <property name="password" value="${amq.password}"/>
+    </bean>
+    <bean class="org.apache.camel.component.jms.JmsConfiguration" id="jmsConfig">
+        <property name="connectionFactory" ref="jmsConnectionFactory"/>
+        <property name="transacted" value="false"/>
+    </bean>
+    <bean class="org.apache.activemq.camel.component.ActiveMQComponent" id="activemq">
+        <property name="configuration" ref="jmsConfig"/>
+    </bean>
+    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+        <restConfiguration bindingMode="off" component="jetty"
+            contextPath="/amq" host="0.0.0.0" port="9098"/>
+        <rest id="rest-846ac2d0-d513-493c-9083-1211ba0ad870">
+            <post id="df5c3b3d-bfb6-43b9-b58c-8eb972619f71" uri="/store/topic">
+                <to uri="direct:producer-topic"/>
+            </post>
+            <post id="cc20c29d-1c48-40f5-b179-f6c27f31559a" uri="/store/queue">
+                <to uri="direct:producer-queue"/>
+            </post>
+        </rest>
+        <route id="amq_producer_topic">
+            <from id="_to1" uri="direct:producer-topic"/>
+            <log id="route-log" message="Request Message : ${body}"/>
+            <to id="_to2" pattern="InOnly" uri="activemq:topic:smf-topic"/>
+        </route>
+        <route id="amq_producer_queue">
+            <from id="_to12" uri="direct:producer-queue"/>
+            <log id="route-log2" message="Request Message : ${body}"/>
+            <to id="_to22" pattern="InOnly" uri="activemq:queue:smf-queue"/>
+        </route>
+        <!--route id="amq_consumer_topic">
+            <from id="_from1" uri="activemq:topic:smf-topic"/>
+            <log id="_log1" message="Consumer 1 Received data from AMQ Topic : ${body}"/>
+        </route>
+        <route id="amq_consumer_topic_2">
+            <from id="_from2" uri="activemq:topic:smf-topic"/>
+            <log id="_log2" message="Consumer 2 Received data from AMQ Topic : ${body}"/>
+        </route>
+        <route id="amq_consumer_queue">
+            <from id="_from12" uri="activemq:queue:smf-queue"/>
+            <log id="_log12" message="Consumer 1 Received data from AMQ Queue : ${body}"/>
+        </route>
+        <route id="amq_consumer_queue_2">
+            <from id="_from22" uri="activemq:queue:smf-queue"/>
+            <log id="_log22" message="Consumer 2 Received data from AMQ Queue : ${body}"/>
+        </route>-->
+    </camelContext>
+</beans>

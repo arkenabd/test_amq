@@ -1,0 +1,161 @@
+{
+  "apiVersion" : "apps.openshift.io/v1",
+  "kind" : "DeploymentConfig",
+  "metadata" : {
+    "creationTimestamp" : "2021-09-03T07:38:10Z",
+    "generation" : 3,
+    "labels" : {
+      "app" : "camel-ose-springboot-xml",
+      "group" : "org.mycompany",
+      "provider" : "fabric8",
+      "version" : "1.0.0-SNAPSHOT"
+    },
+    "name" : "camel-ose-springboot-xml",
+    "namespace" : "app-demo",
+    "resourceVersion" : "325129",
+    "selfLink" : "/apis/apps.openshift.io/v1/namespaces/app-demo/deploymentconfigs/camel-ose-springboot-xml",
+    "uid" : "e35fe26d-0c89-11ec-b3a9-080027a6f60f"
+  },
+  "spec" : {
+    "replicas" : 1,
+    "revisionHistoryLimit" : 2,
+    "selector" : {
+      "app" : "camel-ose-springboot-xml",
+      "group" : "org.mycompany",
+      "provider" : "fabric8"
+    },
+    "strategy" : {
+      "activeDeadlineSeconds" : 21600,
+      "resources" : { },
+      "rollingParams" : {
+        "intervalSeconds" : 1,
+        "maxSurge" : "25%",
+        "maxUnavailable" : "25%",
+        "timeoutSeconds" : 3600,
+        "updatePeriodSeconds" : 1
+      },
+      "type" : "Rolling"
+    },
+    "template" : {
+      "metadata" : {
+        "labels" : {
+          "app" : "camel-ose-springboot-xml",
+          "com.company" : "Red_Hat",
+          "group" : "org.mycompany",
+          "provider" : "fabric8",
+          "rht.comp" : "camel-ose-springboot-xml",
+          "rht.comp_ver" : "1.0.0-SNAPSHOT",
+          "rht.prod_name" : "Red_Hat_Integration",
+          "rht.prod_ver" : "7.8",
+          "version" : "1.0.0-SNAPSHOT"
+        }
+      },
+      "spec" : {
+        "containers" : [ {
+          "env" : [ {
+            "name" : "SPRING_APPLICATION_JSON",
+            "value" : "{\"server\":{\"tomcat\":{\"max-threads\":1}}}"
+          }, {
+            "name" : "KUBERNETES_NAMESPACE",
+            "valueFrom" : {
+              "fieldRef" : {
+                "apiVersion" : "v1",
+                "fieldPath" : "metadata.namespace"
+              }
+            }
+          } ],
+          "image" : "camel-ose-springboot-xml:latest",
+          "imagePullPolicy" : "IfNotPresent",
+          "livenessProbe" : {
+            "failureThreshold" : 3,
+            "httpGet" : {
+              "path" : "/actuator/health",
+              "port" : 8080,
+              "scheme" : "HTTP"
+            },
+            "initialDelaySeconds" : 180,
+            "periodSeconds" : 10,
+            "successThreshold" : 1,
+            "timeoutSeconds" : 1
+          },
+          "name" : "spring-boot",
+          "ports" : [ {
+            "containerPort" : 8080,
+            "name" : "http",
+            "protocol" : "TCP"
+          }, {
+            "containerPort" : 9779,
+            "name" : "prometheus",
+            "protocol" : "TCP"
+          }, {
+            "containerPort" : 8778,
+            "name" : "jolokia",
+            "protocol" : "TCP"
+          } ],
+          "readinessProbe" : {
+            "failureThreshold" : 3,
+            "httpGet" : {
+              "path" : "/actuator/health",
+              "port" : 8080,
+              "scheme" : "HTTP"
+            },
+            "initialDelaySeconds" : 10,
+            "periodSeconds" : 10,
+            "successThreshold" : 1,
+            "timeoutSeconds" : 1
+          },
+          "resources" : {
+            "limits" : {
+              "cpu" : "1"
+            },
+            "requests" : {
+              "cpu" : "200m"
+            }
+          },
+          "securityContext" : {
+            "privileged" : false
+          },
+          "terminationMessagePath" : "/dev/termination-log",
+          "terminationMessagePolicy" : "File"
+        } ],
+        "dnsPolicy" : "ClusterFirst",
+        "restartPolicy" : "Always",
+        "schedulerName" : "default-scheduler",
+        "securityContext" : { },
+        "terminationGracePeriodSeconds" : 30
+      }
+    },
+    "test" : false,
+    "triggers" : [ {
+      "type" : "ConfigChange"
+    } ]
+  },
+  "status" : {
+    "availableReplicas" : 0,
+    "conditions" : [ {
+      "lastTransitionTime" : "2021-09-03T07:38:10Z",
+      "lastUpdateTime" : "2021-09-03T07:38:10Z",
+      "message" : "Deployment config does not have minimum availability.",
+      "status" : "False",
+      "type" : "Available"
+    }, {
+      "lastTransitionTime" : "2021-09-03T07:38:12Z",
+      "lastUpdateTime" : "2021-09-03T07:38:12Z",
+      "message" : "replication controller \"camel-ose-springboot-xml-1\" is progressing",
+      "reason" : "ReplicationControllerUpdated",
+      "status" : "True",
+      "type" : "Progressing"
+    } ],
+    "details" : {
+      "causes" : [ {
+        "type" : "ConfigChange"
+      } ],
+      "message" : "config change"
+    },
+    "latestVersion" : 1,
+    "observedGeneration" : 1,
+    "replicas" : 1,
+    "unavailableReplicas" : 1,
+    "updatedReplicas" : 1
+  }
+}
